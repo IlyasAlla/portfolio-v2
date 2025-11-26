@@ -17,18 +17,6 @@ Contact form (email / WhatsApp integration)
 
 Fast load time and SEO-friendly structure
 
-## 🛠️ Tech Stack
-
-React / JavaScript
-
-Vite (or CRA — adjust if needed)
-
-TailwindCSS
-
-Framer Motion
-
-React Router
-
 ## 🎯 Purpose
 
 This portfolio serves as my professional digital identity, allowing recruiters, clients, and collaborators to explore my work and contact me easily.
