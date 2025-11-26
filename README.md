@@ -3,7 +3,7 @@
 Modern and responsive personal portfolio built with React.
 This project showcases my skills, experience, and projects through a clean UI, smooth animations, and a focus on performance.
 
-✨ Features
+## ✨ Features
 
 Fully responsive design (desktop & mobile)
 
@@ -17,7 +17,7 @@ Contact form (email / WhatsApp integration)
 
 Fast load time and SEO-friendly structure
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 
 React / JavaScript
 
@@ -29,6 +29,6 @@ Framer Motion
 
 React Router
 
-🎯 Purpose
+## 🎯 Purpose
 
 This portfolio serves as my professional digital identity, allowing recruiters, clients, and collaborators to explore my work and contact me easily.
