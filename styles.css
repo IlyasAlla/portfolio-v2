@@ -1,0 +1,570 @@
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .resume-link {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 8px 15px;
+            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .resume-link:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            overflow: auto;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.3;
+            transition: opacity 0.5s ease;
+        }
+        
+        #matrix-bg.hidden {
+            opacity: 0;
+        }
+
+        .terminal-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            padding: 8px 12px;
+            border-bottom: 1px solid #00ff00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .btn-close { background: #ff5f56; }
+        .btn-minimize { background: #ffbd2e; }
+        .btn-maximize { background: #27c93f; }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            color: #00ff00;
+            font-size: 12px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .terminal-body {
+            padding: 20px;
+            height: 80vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .terminal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal-body::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        .terminal-body::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 4px;
+        }
+
+        .output-line {
+            margin: 4px 0;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .prompt {
+            color: #00ff00;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+        }
+
+        .command {
+            color: #00d4ff;
+        }
+
+        .error {
+            color: #ff3860;
+        }
+
+        .success {
+            color: #00ff00;
+        }
+
+        .info {
+            color: #ffdd57;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .input-line.hidden {
+            display: none;
+        }
+
+        #terminal-input {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            margin-left: 8px;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #00ff00;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .ascii-art {
+            color: #00ff00;
+            line-height: 1.2;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            white-space: pre;
+        }
+
+        .skill-bar {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        .skill-name {
+            width: 150px;
+            color: #00d4ff;
+        }
+
+        .bar-container {
+            flex: 1;
+            background: #1a1a1a;
+            height: 12px;
+            border: 1px solid #00ff00;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00d4ff);
+            transition: width 1s ease-out;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+        }
+
+        .section-title {
+            color: #ffdd57;
+            font-size: 18px;
+            margin: 20px 0 10px 0;
+            text-shadow: 0 0 10px rgba(255, 221, 87, 0.5);
+            border-bottom: 1px solid #ffdd57;
+            padding-bottom: 5px;
+        }
+
+        a {
+            color: #00d4ff;
+            text-decoration: none;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+        }
+
+        a:hover {
+            color: #00ff00;
+            text-decoration: underline;
+        }
+
+        .boot-sequence {
+            color: #00ff00;
+            font-size: 12px;
+        }
+
+        .project-card {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(0, 255, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        .project-title {
+            color: #00d4ff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .login-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .login-box {
+            text-align: center;
+            padding: 40px;
+            border: 2px solid #00ff00;
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.4);
+            border-radius: 8px;
+            min-width: 500px;
+            animation: slideDown 0.8s ease-out, borderPulse 3s ease-in-out infinite;
+        }
+
+        .root-logo {
+            color: #00ff00;
+            font-size: 16px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+            white-space: pre;
+            line-height: 1.2;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .login-title {
+            color: #00ff00;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+            animation: slideDown 1s ease-out 0.2s both;
+        }
+
+        .login-subtitle {
+            color: #00d4ff;
+            margin-bottom: 30px;
+            font-size: 14px;
+            animation: slideDown 1s ease-out 0.4s both;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            animation: slideDown 1s ease-out 0.6s both;
+        }
+
+        .input-group {
+            width: 100%;
+            text-align: left;
+        }
+
+        .input-label {
+            color: #00ff00;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .login-input {
+            width: 100%;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border-radius: 4px;
+            outline: none;
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+
+        .login-input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .login-button {
+            background: #00ff00;
+            color: #0a0a0a;
+            border: none;
+            padding: 12px 40px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            background: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .login-hint {
+            color: #ffdd57;
+            font-size: 12px;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+            }
+            50% {
+                text-shadow: 0 0 25px rgba(0, 255, 0, 1), 0 0 35px rgba(0, 212, 255, 0.6);
+            }
+        }
+
+        @keyframes borderPulse {
+            0%, 100% {
+                box-shadow: 0 0 30px rgba(0, 255, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(0, 255, 0, 0.8), 0 0 70px rgba(0, 212, 255, 0.4);
+            }
+        }
+
+        .loader-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loader-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-text {
+            color: #00ff00;
+            font-size: 18px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+        }
+
+        .loader-bar-container {
+            width: 400px;
+            height: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .loader-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ff00, #00d4ff, #00ff00);
+            background-size: 200% 100%;
+            animation: loadProgress 2s ease-in-out forwards, shimmer 1s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+        }
+
+        @keyframes loadProgress {
+            to { width: 100%; }
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% 0; }
+        }
+
+        .loader-status {
+            color: #00d4ff;
+            font-size: 12px;
+            margin-top: 15px;
+            min-height: 20px;
+        }
+
+        /* In style.css, add this style: */
+        .login-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 15px rgba(0, 255, 0, 0.6));
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        /* Add these media queries to style.css at the end of the file: */
+        @media screen and (max-width: 768px) {
+            .terminal-container {
+                margin: 10px;
+                border-radius: 4px;
+            }
+
+            .terminal-body {
+                height: 70vh;
+                padding: 15px;
+                font-size: 12px;
+            }
+
+            .login-box {
+                min-width: auto;
+                width: 90%;
+                padding: 30px 20px;
+            }
+
+            .root-logo {
+                font-size: 8px;
+            }
+
+            .login-title {
+                font-size: 20px;
+            }
+
+            .login-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .skill-name {
+                width: 100px;
+                font-size: 12px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .loader-bar-container {
+                width: 80%;
+            }
+
+            #terminal-input {
+                font-size: 12px;
+            }
+
+            .output-line {
+                font-size: 12px;
+                word-wrap: break-word;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .terminal-body {
+                height: 65vh;
+                padding: 10px;
+                font-size: 11px;
+            }
+
+            .login-box {
+                width: 95%;
+                padding: 20px 15px;
+            }
+
+            .root-logo {
+                font-size: 6px;
+            }
+
+            .login-title {
+                font-size: 18px;
+            }
+
+            .login-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            .skill-name {
+                width: 80px;
+                font-size: 11px;
+            }
+
+            .section-title {
+                font-size: 14px;
+            }
+
+            .project-card {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .terminal-title {
+                font-size: 10px;
+            }
+        }

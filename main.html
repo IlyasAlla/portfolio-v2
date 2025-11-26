@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sh9x Portfolio</title>
+    <link rel="icon" type="image/x-icon" href="images/geass.icon">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <canvas id="matrix-bg"></canvas>
+    
+    <!-- Loader Screen -->
+    <div class="loader-screen hidden" id="loader-screen">
+        <div class="loader-text">Initializing System...</div>
+        <div class="loader-bar-container">
+            <div class="loader-bar"></div>
+        </div>
+        <div class="loader-status" id="loader-status">Loading modules...</div>
+    </div>
+    
+    <!-- Login Screen -->
+    <div class="login-screen" id="login-screen">
+        <div class="login-box">
+            <div class="root-logo">
+███████╗  ██████╗  ██████╗ ████████╗███████╗ ██████╗ ██╗     ██╗ ██████╗ 
+██╔══██╗██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝██╔═══██╗██║     ██║██╔═══██╗
+███████╔╝██║   ██║██████╔╝   ██║   █████╗  ██║   ██║██║     ██║██║   ██║
+██╔═══╝ ██║   ██║██╔══██╗   ██║   ██╔══╝  ██║   ██║██║     ██║██║   ██║
+██║     ╚██████╔╝██║  ██║   ██║   ██║     ╚██████╔╝███████╗██║╚██████╔╝
+╚═╝      ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝      ╚═════╝ ╚══════╝╚═╝ ╚═════╝ 
+            </div>
+            <img src="images/ryuzaki.icon" alt="Logo" class="login-icon">
+            <div class="login-title">Shadow9x</div>
+            <div class="login-subtitle">portfolio.local - tty1</div>
+            
+            <form class="login-form" id="login-form">
+                <div class="input-group">
+                    <label class="input-label">username:</label>
+                    <input type="text" class="login-input" id="username" autocomplete="off" value="guest">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">password:</label>
+                    <input type="password" class="login-input" id="password" autocomplete="off">
+                </div>
+                <button type="submit" class="login-button">LOGIN</button>
+                <div class="login-hint">Hint: Press Enter or click Login (any password works)</div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="terminal-button btn-close"></div>
+                <div class="terminal-button btn-minimize"></div>
+                <div class="terminal-button btn-maximize"></div>
+            </div>
+            <div class="terminal-title">root@portfolio: ~</div>
+        </div>
+        
+        <div class="terminal-body" id="terminal-output">
+            <div class="input-line hidden">
+                <span class="prompt">root@portfolio:~#</span>
+                <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false">
+                <span class="cursor"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix rain effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        // Terminal functionality
+        const terminalOutput = document.getElementById('terminal-output');
+        const terminalInput = document.getElementById('terminal-input');
+        const loginScreen = document.getElementById('login-screen');
+        const loginForm = document.getElementById('login-form');
+        const loaderScreen = document.getElementById('loader-screen');
+        const loaderStatus = document.getElementById('loader-status');
+        let commandHistory = [];
+        let historyIndex = -1;
+        let isLoggedIn = false;
+
+        // Handle login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            
+            if (username.trim() !== '') {
+                // Hide login screen
+                loginScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loginScreen.classList.add('hidden');
+                    
+                    // Show loader
+                    loaderScreen.classList.remove('hidden');
+                    
+                    const loadingMessages = [
+                        'Loading modules...',
+                        'Initializing kernel...',
+                        'Mounting filesystems...',
+                        'Starting services...',
+                        'Loading user profile...',
+                        'Almost ready...'
+                    ];
+                    
+                    let msgIndex = 0;
+                    const msgInterval = setInterval(() => {
+                        if (msgIndex < loadingMessages.length) {
+                            loaderStatus.textContent = loadingMessages[msgIndex];
+                            msgIndex++;
+                        }
+                    }, 350);
+                    
+                    // Hide loader after animation completes
+                    setTimeout(() => {
+                        clearInterval(msgInterval);
+                        loaderScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            loaderScreen.classList.add('hidden');
+                            isLoggedIn = true;
+                            bootSequence();
+                            terminalInput.focus();
+                        }, 500);
+                    }, 2300);
+                }, 500);
+            }
+        });
+
+        // Focus username on page load
+        window.addEventListener('load', () => {
+            document.getElementById('username').focus();
+        });
+
+        const commands = {
+            help: `<div class="section-title">Available Commands</div>
+<div style="margin: 10px 0;">
+    <span class="info">about</span>        - Display information about me
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">skills</span>       - Show my technical skills
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">projects</span>     - List my projects
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">certificates</span> - View my certifications
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">experience</span>   - Show work experience
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">resume</span>   - Acces my resume
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">contact</span>      - Get my contact information
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">clear</span>        - Clear the terminal
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">matrix</span>       - Toggle Matrix effect
+</div>
+<div style="margin: 10px 0;">
+    <span class="info">help</span>         - Show this help message
+</div>`,
+            
+            about: `<div class="section-title">About Me</div>
+<div style="margin: 10px 0;">
+    <span class="success">Name:</span> Ilyas Alla
+</div>
+<div style="margin: 10px 0;">
+    <span class="success">Role:</span> IT & Cloud / Pentester
+</div>
+<div style="margin: 10px 0;">
+    <span class="success">Location:</span> Casablanca, Morocco
+</div>
+<div style="margin: 10px 0;">
+    <span class="success">Status:</span> Available for opportunities
+</div>
+<span class="success"> I'm a passionate IT professional with expertise in cybersecurity, 
+cloud, and system administration. I love exploring new technologies 
+and building innovative solutions.</span>`,
+
+            skills: function() {
+                const skills = [
+                    { name: 'Linux/WinServer', level: 80 },
+                    { name: 'Python', level: 75 },
+                    { name: 'Virtualisation', level: 80 },
+                    { name: 'Cybersecurity', level: 70 },
+                    { name: 'Networking', level: 80 },
+                    { name: 'Docker/K8s', level: 75 },
+                    { name: 'Oracle/MariaDB', level: 80 },
+                    { name: 'Cloud (AWS/Azure)', level: 75 }
+                ];
+
+                let output = '<div class="section-title">Technical Skills</div>';
+                skills.forEach(skill => {
+                    output += `<div class="skill-bar">
+                        <span class="skill-name">${skill.name}</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: ${skill.level}%"></div>
+                        </div>
+                        <span style="margin-left: 10px; color: #00ff00;">${skill.level}%</span>
+                    </div>`;
+                });
+                return output;
+            },
+
+            projects: `<div class="section-title">Featured Projects</div>
+
+<div class="project-card">
+    <div class="project-title">→ CLoud-Native Microservice Stack</div>
+    <span class="info">Tech:</span> Docker, Kubernetes, Python Flask, MongoDB, NGINX, Prometheus, Grafana, GitHub Actions, Helm
+    <div>Cloud-native platform simulating enterprise-level microservices
+architecture</div>
+    <a href="https://github.com/IlyasAlla/Cloud-Native-Microservice-Stack" target="_blank">github.com/IlyasAlla/Cloud-Native-Microservice-Stack</a>
+</div>
+
+<div class="project-card">
+    <div class="project-title">→ Cloud Shift</div>
+    <span class="info">Tech:</span> Openstack, Linux, KVM, MariaDB, RabbitMQ, CI/CD
+    <div>Comprehensive private cloud solution using Openstack for business
+requirements</div>
+    <a href="#" target="_blank"></a>
+</div>
+
+<div class="project-card">
+    <div class="project-title">→ Azure DDoS Protection</div>
+    <span class="info">Tech:</span> Azure Monitor, Log Analytics, Azure Security Center, Powershell, ARM Templates
+    <div>DDoS protection strategy to protect critical cloud infrastructure from volumetric
+cyber attacks</div>
+    <a href="#" target="_blank"></a>
+</div>`,
+
+            certificates: `<div class="section-title">Certifications & Achievements</div>
+
+<div class="project-card">
+    <div class="project-title">✓ Cyber Security 101 (In Progress)</div>
+    <span class="info">Issued:</span> 2025
+    <div>Certification ID: THM-****</div>
+</div>
+
+<div class="project-card">
+    <div class="project-title">✓ Pre Security Certificate</div>
+    <span class="info">Issued:</span> 2025
+    <div>Certification ID: THM-3OI3P42R9U</div>
+</div>
+
+<div class="project-card">
+    <div class="project-title">✓ Introduction to CIP</div>
+    <span class="info">Issued:</span> 2025
+    <div>Certification ID: 82a08218-7f29-4ad8-bcc9-e742e7eb31ab</div>
+</div>
+
+<div class="project-card">
+    <div class="project-title">✓ AWS Certified Cloud Practitioner</div>
+    <span class="info">Issued:</span> 2025
+    <div>Certification ID: 57cce6ae8ea5487689ee3ba772f29fa0</div>
+</div>
+
+<div class="project-card">
+    <div class="project-title">✓ ALX Professional Foundations</div>
+    <span class="info">Issued:</span> 2025
+    <div>Certification ID: 9r589pT3zL</div>
+</div>
+
+<div class="project-card">
+    <div class="project-title">✓ Cisco: Python Essentials 1</div>
+    <span class="info">Issued:</span> 2024
+    <div>Certification ID: 6a9ba6ac-460d-4005-94b6-4a92aebf1adc</div>
+</div>
+
+<div class="project-card">
+    <div class="project-title">✓ Oracle Cloud Infrastructure 2024 Data Certified Foundations Associate</div>
+    <span class="info">Issued:</span> 2024
+    <div>Certification ID: 316025096OCI2024DCFA</div>
+</div>
+
+<div class="project-card">
+    <div class="project-title">✓ Oracle Cloud Infrastructure for Sunbird Ed Specialty</div>
+    <span class="info">Issued:</span> 2024
+    <div>Certification ID: 316025096OCISEDS</div>
+</div>
+
+<span class="info">All certifications are active and up to date.</span>`,
+
+            resume: `<div class="section-title">Resume / CV</div>
+
+<div class="project-card">
+    <div class="project-title">📄 English Version</div>
+    <span class="info">Format:</span> PDF
+    <div style="margin: 10px 0;">Professional resume in English</div>
+    <a href="files/resume-en.pdf" target="_blank" class="resume-link">
+        <span class="success">→ Download English Resume</span>
+    </a>
+</div>
+
+<div class="project-card">
+    <div class="project-title">📄 Version Française</div>
+    <span class="info">Format:</span> PDF
+    <div style="margin: 10px 0;">CV professionnel en français</div>
+    <a href="files/resume-fr.pdf" target="_blank" class="resume-link">
+        <span class="success">→ Télécharger CV Français</span>
+    </a>
+</div>
+
+<span class="info">Click on the links above to view or download the resume.</span>`,
+
+            experience: `<div class="section-title">Work Experience</div>
+
+<span class="success">Help Desk Advisor @ Concentrix</span>
+<span class="info">| October 2024 – January 2025</span>
+    <div style="margin: 10px 0;">
+        <span> • Provided technical support and assistance to users by responding to help desk inquiries and service
+requests</span>
+    </div>
+    <div style="margin: 10px 0;">
+        <span> • Maintained clear documentation of all support cases and resolution procedures in ticketing system</span>
+    </div>
+    <div style="margin: 10px 0;">
+        <span> • Collaborated with Level 2 and Level 3 IT teams to escalate complex technical issues requiring specialized
+expertise</span>
+    </div>
+    <div style="margin: 10px 0;">
+<span> - - - - - - - - -</span>
+    </div>
+<span class="success">IT Intern @ Faculty of Science and Technology</span>
+<span class="info">| April 2023 – June 2023</span>
+    <div style="margin: 10px 0;">
+    <span> • Contributed to WordPress-based website development by designing and implementing Proxmox
+virtualization environment</span>
+    </div>
+    <div style="margin: 10px 0;">
+    <span> • Independently configured and tested Azure DDoS Protection Plan to secure cloud-based virtual networks</span>
+    </div>
+    <div style="margin: 10px 0;">
+    <span> • Gained hands-on experience in virtualization, secure connectivity, and cloud security solutions`,
+
+            contact: `<div class="section-title">Contact Information</div>
+<div style="margin: 10px 0;">
+    <span class="success">Email:</span> <a href="mailto:ilyasalla18@gmail.com">ilyasalla18@gmail.com</a>
+</div>
+<div style="margin: 10px 0;">
+    <span class="success">GitHub:</span> <a href="https://github.com/ilyasalla" target="_blank">https://github.com/ilyasalla</a>
+</div>
+    <div style="margin: 10px 0;">
+    <span class="success">LinkedIn:</span> <a href="https://linkedin.com/in/ilyas-alla/" target="_blank">linkedin.com/in/ilyas-alla/</a>
+</div>
+    <div style="margin: 10px 0;">
+    <span class="success">Twitter:</span> <a href="https://twitter.com/Shadow9tv" target="_blank">@Shadow9tv</a>
+</div>
+<span class="info">Feel free to reach out for collaborations or opportunities!</span>`,
+
+            clear: 'CLEAR',
+            cls: 'CLEAR',
+            matrix: 'TOGGLE_MATRIX'
+        };
+
+        function bootSequence() {
+            const bootMessages = [
+                '<span class="boot-sequence">Last login: ' + new Date().toDateString() + ' from 192.168.1.100</span>',
+                '<span class="boot-sequence">Linux portfolio 6.9.1-arch1-1 #1 SMP PREEMPT_DYNAMIC Arch Linux 6.9.1-arch1-1 (2025-10-13) x86_64</span>',
+                '',
+                '<span class="boot-sequence">[  OK  ] Started Terminal Portfolio System</span>',
+                '<span class="boot-sequence">[  OK  ] Started Shell Interface.</span>',
+                
+                '<span class="boot-sequence">[  OK  ] Reached target Multi-User System</span>',
+                '',
+                '<span class="ascii-art">    ███████╗██╗  ██╗ █████╗ ██╗  ██╗\n    ██╔════╝██║  ██║██╔══██╗╚██╗██╔╝\n    ███████╗███████║╚██████║ ╚███╔╝\n    ╚════██║██╔══██║ ╚═══██║ ██╔██╗\n    ███████║██║  ██║ █████╔╝██╔╝ ██╗\n    ╚══════╝╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝\n    </span>', 
+                '',
+                '<span class="success">✓ Authentication successful. Welcome to my portfolio terminal!</span>',
+                '',
+                'Type <span class="command">help</span> to see available commands.',
+                ''
+            ];
+
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < bootMessages.length) {
+                    addOutput(bootMessages[i]);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    // Show input line after boot sequence completes
+                    const inputLine = terminalOutput.querySelector('.input-line');
+                    inputLine.classList.remove('hidden');
+                    terminalInput.focus();
+                }
+            }, 150);
+        }
+
+        function addOutput(text, isCommand = false) {
+            const line = document.createElement('div');
+            line.className = 'output-line';
+            
+            if (isCommand) {
+                line.innerHTML = `<span class="prompt">root@portfolio:~#</span> <span class="command">${text}</span>`;
+            } else {
+                line.innerHTML = text;
+            }
+            
+            const inputLine = terminalOutput.querySelector('.input-line');
+            terminalOutput.insertBefore(line, inputLine);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        function executeCommand(cmd) {
+            const trimmedCmd = cmd.trim().toLowerCase();
+            
+            if (trimmedCmd === '') return;
+            
+            commandHistory.push(cmd);
+            historyIndex = commandHistory.length;
+            
+            addOutput(cmd, true);
+            
+            if (commands[trimmedCmd]) {
+                if (trimmedCmd === 'clear' || trimmedCmd === 'cls') {
+                    const lines = terminalOutput.querySelectorAll('.output-line');
+                    lines.forEach(line => line.remove());
+                } else if (trimmedCmd === 'matrix') {
+                    const canvas = document.getElementById('matrix-bg');
+                    canvas.classList.toggle('hidden');
+                    const isHidden = canvas.classList.contains('hidden');
+                    addOutput(`<span class="success">Matrix effect ${isHidden ? 'disabled' : 'enabled'}</span>`);
+                } else if (typeof commands[trimmedCmd] === 'function') {
+                    addOutput(commands[trimmedCmd]());
+                } else {
+                    addOutput(commands[trimmedCmd]);
+                }
+            } else {
+                addOutput(`<span class="error">Command not found: ${cmd}</span>\nType <span class="command">help</span> for available commands.`);
+            }
+        }
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                executeCommand(terminalInput.value);
+                terminalInput.value = '';
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    terminalInput.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    terminalInput.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    terminalInput.value = '';
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                const partial = terminalInput.value.toLowerCase();
+                const matches = Object.keys(commands).filter(cmd => cmd.startsWith(partial));
+                if (matches.length === 1) {
+                    terminalInput.value = matches[0];
+                }
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (isLoggedIn && !e.target.closest('.login-screen')) {
+                terminalInput.focus();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+
+</html>
